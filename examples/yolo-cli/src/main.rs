@@ -32,7 +32,9 @@ fn main() -> Result<()> {
             CUDAExecutionProvider::default().build(),
             CoreMLExecutionProvider::default().build(),
         ])
-        .commit();
+        .commit()
+        .then_some(())
+        .context("failed to commit ONNX Runtime")?;
 
     tracing::info!("Loading image {:?}…", args.picture_path.display());
     let original_img = image::open(&args.picture_path)
