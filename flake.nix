@@ -48,6 +48,7 @@
               extensions = [
                 "rust-src"
                 "rustfmt"
+                "clippy"
               ];
             };
       };
@@ -65,7 +66,7 @@
               cargo-watch
               rust-analyzer
 
-              nixfmt-rfc-style
+              nixfmt
             ];
 
             env = {
