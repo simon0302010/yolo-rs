@@ -32,7 +32,7 @@ fn main() -> Result<()> {
             CUDAExecutionProvider::default().build(),
             CoreMLExecutionProvider::default().build(),
         ])
-        .commit()?;
+        .commit();
 
     tracing::info!("Loading image {:?}…", args.picture_path.display());
     let original_img = image::open(&args.picture_path)
