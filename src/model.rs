@@ -4,6 +4,9 @@ use std::path::Path;
 
 use arcstr::ArcStr;
 
+#[cfg(feature = "rocm")]
+use ort::execution_providers::ROCmExecutionProvider;
+
 use crate::error::YoloError;
 
 /// The YOLO model.
@@ -135,6 +138,15 @@ impl YoloModelSession {
     /// You can export the ONNX model file according to
     /// [Ultralytics' manual](https://docs.ultralytics.com/integrations/onnx/).
     pub fn from_filename_v8(filename: impl AsRef<Path>) -> Result<Self, YoloError> {
+        #[cfg(feature = "rocm")]
+        let session = ort::session::Session::builder()
+            .map_err(YoloError::OrtSessionBuildError)?
+            .with_execution_providers([ROCmExecutionProvider::default().build()])
+            .map_err(|e| YoloError::OrtSessionBuildError(e.into()))?
+            .commit_from_file(filename)
+            .map_err(YoloError::OrtSessionLoadError)?;
+
+        #[cfg(not(feature = "rocm"))]
         let session = ort::session::Session::builder()
             .map_err(YoloError::OrtSessionBuildError)?
             .commit_from_file(filename)

@@ -10,7 +10,7 @@ use arcstr::ArcStr;
 use error::YoloError;
 use image::{DynamicImage, GenericImageView, Rgba, imageops::FilterType};
 use model::YoloModelSession;
-use ndarray::{Array4, ArrayBase, ArrayView4, Axis, s};
+use ndarray::{Array4, ArrayBase, ArrayView4};
 use ort::{inputs, value::TensorRef};
 
 #[derive(Debug, Clone, Copy)]
