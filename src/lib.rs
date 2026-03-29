@@ -154,21 +154,15 @@ pub fn inference(
         .try_extract_array::<f32>()
         .map_err(YoloError::OrtExtractSensorError)?;
 
-    eprintln!("raw shape: {:?}", output.shape());
-
-    let output = output.reversed_axes();
-    eprintln!("reversed shape: {:?}", output.shape());
-
     // Turn the output tensor into bounding boxes
-    let boxes = output
-        .axis_iter(Axis(1))
-        .filter_map(|row| {
-            let prob = row[4];
+    let boxes = (0..300)
+        .filter_map(|i| {
+            let prob = output[[0, i, 4]];
             if prob < probability_threshold {
                 return None;
             }
 
-            let class_id = row[5] as usize;
+            let class_id = output[[0, i, 5]] as usize;
             let label = labels[class_id].clone();
 
             let scale_x = raw_width as f32 / 640.0;
@@ -176,10 +170,10 @@ pub fn inference(
 
             Some(YoloEntityOutput {
                 bounding_box: BoundingBox {
-                    x1: row[0] * scale_x,
-                    y1: row[1] * scale_y,
-                    x2: row[2] * scale_x,
-                    y2: row[3] * scale_y,
+                    x1: output[[0, i, 0]] * scale_x,
+                    y1: output[[0, i, 1]] * scale_y,
+                    x2: output[[0, i, 2]] * scale_x,
+                    y2: output[[0, i, 3]] * scale_y,
                 },
                 label,
                 confidence: prob,
