@@ -154,6 +154,11 @@ pub fn inference(
         .try_extract_array::<f32>()
         .map_err(YoloError::OrtExtractSensorError)?;
 
+    eprintln!("raw shape: {:?}", output.shape());
+
+    let output = output.reversed_axes();
+    eprintln!("reversed shape: {:?}", output.shape());
+
     // Turn the output tensor into bounding boxes
     let boxes = output
         .axis_iter(Axis(1))
