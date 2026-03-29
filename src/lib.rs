@@ -1,6 +1,6 @@
-//! A Rust library for the YOLO v11 object detection model.
+//! A Rust library for the YOLO v26 object detection model.
 //!
-//! This library provides a high-level API for running the YOLO v11 object detection model.
+//! This library provides a high-level API for running the YOLO v26 object detection model.
 //! Currently, it supports only the inference.
 
 pub mod error;
@@ -152,35 +152,29 @@ pub fn inference(
         .map_err(YoloError::OrtInferenceError)?;
     let output = outputs["output0"]
         .try_extract_array::<f32>()
-        .map_err(YoloError::OrtExtractSensorError)?
-        .reversed_axes();
-    let output = output.slice(s![.., .., 0]);
+        .map_err(YoloError::OrtExtractSensorError)?;
 
     // Turn the output tensor into bounding boxes
     let boxes = output
-        .axis_iter(Axis(0))
+        .axis_iter(Axis(1))
         .filter_map(|row| {
-            let (class_id, prob) = row
-                .iter()
-                .skip(4) // skip bounding box coordinates
-                .enumerate()
-                .map(|(index, value)| (index, *value))
-                .reduce(|accum, row| if row.1 > accum.1 { row } else { accum })
-                .filter(|(_, prob)| *prob >= probability_threshold)?;
+            let prob = row[4];
+            if prob < probability_threshold {
+                return None;
+            }
 
+            let class_id = row[5] as usize;
             let label = labels[class_id].clone();
 
-            let xc = row[0_usize] / 640. * (raw_width as f32);
-            let yc = row[1_usize] / 640. * (raw_height as f32);
-            let w = row[2_usize] / 640. * (raw_width as f32);
-            let h = row[3_usize] / 640. * (raw_height as f32);
+            let scale_x = raw_width as f32 / 640.0;
+            let scale_y = raw_height as f32 / 640.0;
 
             Some(YoloEntityOutput {
                 bounding_box: BoundingBox {
-                    x1: xc - w / 2.,
-                    y1: yc - h / 2.,
-                    x2: xc + w / 2.,
-                    y2: yc + h / 2.,
+                    x1: row[0] * scale_x,
+                    y1: row[1] * scale_y,
+                    x2: row[2] * scale_x,
+                    y2: row[3] * scale_y,
                 },
                 label,
                 confidence: prob,
