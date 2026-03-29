@@ -152,6 +152,9 @@ impl YoloModelSession {
             .commit_from_file(filename)
             .map_err(YoloError::OrtSessionLoadError)?;
 
+        #[cfg(feature = "debug")]
+        eprintln!("session inputs: {:?}", session.inputs().iter().map(|i| i.name()).collect::<Vec<_>>());
+
         Ok(Self::new_v8(session))
     }
 

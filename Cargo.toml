@@ -13,6 +13,7 @@ exclude = [".github", "examples", ".envrc", "devenv*"]
 
 [features]
 rocm = ["ort/rocm"]
+debug = []
 
 [dependencies]
 arcstr = "1.2.0"
