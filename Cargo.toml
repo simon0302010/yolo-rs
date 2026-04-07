@@ -13,14 +13,33 @@ exclude = [".github", "examples", ".envrc", "devenv*"]
 
 [features]
 rocm = ["ort/rocm"]
+ort-download-binaries = ["ort/download-binaries"]
 debug = []
 
 [dependencies]
 arcstr = "1.2.0"
 image = "0.25.9"
 ndarray = "0.17"
-ort = "2.0.0-rc.12"
 thiserror = "2.0.18"
+
+[dependencies.ort]
+version = "2.0.0-rc.12"
+default-features = false
+features = [
+	"api-17",
+    "api-18",
+    "api-19",
+    "api-20",
+    "api-21",
+    "api-22",
+    "api-23",
+    "api-24",
+    "copy-dylibs",
+    "ndarray",
+    "std",
+    "tls-native",
+    "tracing"
+]
 
 [workspace]
 members = [
