@@ -14,6 +14,7 @@ exclude = [".github", "examples", ".envrc", "devenv*"]
 [features]
 rocm = ["ort/rocm"]
 ort-download-binaries = ["ort/download-binaries"]
+ort-copy-dylibs = ["ort/copy-dylibs"]
 debug = []
 
 [dependencies]
@@ -34,7 +35,6 @@ features = [
     "api-22",
     "api-23",
     "api-24",
-    "copy-dylibs",
     "ndarray",
     "std",
     "tls-native",
