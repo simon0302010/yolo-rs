@@ -16,6 +16,7 @@ rocm = ["ort/rocm"]
 ort-download-binaries = ["ort/download-binaries"]
 ort-copy-dylibs = ["ort/copy-dylibs"]
 debug = []
+cuda = ["ort/cuda"]
 
 [dependencies]
 arcstr = "1.2.0"
